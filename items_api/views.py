@@ -37,3 +37,15 @@ def getItem(request):
     serializer = ItemSerializer(item)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
+def filterItems(request):
+    standard_filters = ['category','tag']
+    request_filters = request.GET
+    print(request_filters)
+    
+    # queryset = Item.objects.filter(**filter_query)
+    # serializer = ItemSerializer(queryset, many=True)
+    # return Response(serializer.data)
+    return Response(status=status.HTTP_200_OK)
+
+
