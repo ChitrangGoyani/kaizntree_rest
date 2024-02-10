@@ -91,7 +91,7 @@ DATABASES = {
         'PASSWORD': os.environ.get("PGDB_PASS"),
         'HOST': os.environ.get("PGDB_HOST"),
         'PORT': os.environ.get("PGDB_PORT"),
-    }
+    },
 }
 
 

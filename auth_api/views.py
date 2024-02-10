@@ -19,8 +19,8 @@ def register(request):
         user.set_password(request.data['password'])
         user.save()
         token = Token.objects.create(user=user)
-        return Response({'token': token.key, 'user':serializer.data})
-    return Response(serializer.errors, status=status.HTTP_200_OK)
+        return Response({'token': token.key, 'user':serializer.data}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def login(request):
@@ -29,7 +29,7 @@ def login(request):
         return Response('User is not registered', status=status.HTTP_404_NOT_FOUND)
     token, created = Token.objects.get_or_create(user=user)
     serializer = UserSerializer(user)
-    return Response({'token': token.key, 'user': serializer.data})
+    return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 @authentication_classes([SessionAuthentication, TokenAuthentication])
