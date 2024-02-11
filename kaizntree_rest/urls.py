@@ -17,10 +17,11 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.schemas import get_schema_view
 from django.views.generic import TemplateView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 urlpatterns = [
-    path('api_docs/', TemplateView.as_view(template_name='api_documentation.html',extra_context={'schema_url':'api_schema'}), name='swagger-ui'),
-    path('api_schema/', get_schema_view(title='Kaizntree IMS APIs', description='API documentation'), name='api_schema'),
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('admin/', admin.site.urls),
     path('items/', include('items_api.urls')),
     path('user/', include('auth_api.urls'))

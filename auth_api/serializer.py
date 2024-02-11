@@ -5,3 +5,11 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta(object):
         model = User 
         fields = ['id', 'username', 'password', 'email']
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    class Meta(object):
+        model = User 
+        fields = ['username', 'password']
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()

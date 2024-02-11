@@ -1,0 +1,486 @@
+openapi: 3.0.3
+info:
+  title: Kaizntree IMS
+  version: 1.0.0
+  description: Inventory Management System
+paths:
+  /items/:
+    get:
+      operationId: items_retrieve
+      description: Get items with pagination
+      tags:
+      - items
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+          description: ''
+  /items/add/:
+    post:
+      operationId: items_add_create
+      description: Add a single item
+      tags:
+      - items
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Item'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Item'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+          description: ''
+  /items/delete/:
+    delete:
+      operationId: items_delete_destroy
+      description: Delete an item
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+        description: Item Id
+        examples:
+          Id:
+            value: '2'
+      tags:
+      - items
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /items/filter/:
+    get:
+      operationId: items_filter_retrieve
+      description: Filter, Search and Sort
+      parameters:
+      - in: query
+        name: available_stock__gt
+        schema:
+          type: string
+        description: Available Stock count >
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: available_stock__gte
+        schema:
+          type: string
+        description: Available Stock count >=
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: available_stock__lt
+        schema:
+          type: string
+        description: Available Stock count <
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: available_stock__lte
+        schema:
+          type: string
+        description: Available Stock count <=
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: category
+        schema:
+          type: string
+        description: Category of the item
+        examples:
+          RawMaterial:
+            value: Raw
+            summary: Raw Material
+          FinishedMaterial:
+            value: Finished
+            summary: Finished Material
+      - in: query
+        name: createdAt_after
+        schema:
+          type: string
+          format: date-time
+        description: Created At range
+        examples:
+          After:
+            value: '2022-01-01T00:00:00'
+            summary: after
+      - in: query
+        name: createdAt_before
+        schema:
+          type: string
+          format: date-time
+        description: Created At range
+        examples:
+          Before:
+            value: '2024-12-31T23:59:59'
+            summary: before
+      - in: query
+        name: in_stock
+        schema:
+          type: string
+        description: In Stock count
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: in_stock__gt
+        schema:
+          type: string
+        description: In Stock count >
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: in_stock__gte
+        schema:
+          type: string
+        description: In Stock count >=
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: in_stock__lt
+        schema:
+          type: string
+        description: In Stock count <
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: in_stock__lte
+        schema:
+          type: string
+        description: In Stock count <=
+        examples:
+          Count:
+            value: '10'
+      - in: query
+        name: order
+        schema:
+          type: string
+        description: Sort by
+        examples:
+          Category:
+            value: category
+          SKU:
+            value: sku
+          DescendingName:
+            value: -name
+            summary: Descending Name
+          AscendingName:
+            value: name
+            summary: Ascending Name
+      - in: query
+        name: search
+        schema:
+          type: string
+        description: Item Search
+        examples:
+          Item:
+            value: HairProduct
+      - in: query
+        name: stock_status
+        schema:
+          type: string
+        description: Stock Status
+        examples:
+          'True':
+            value: 'True'
+      - in: query
+        name: tag
+        schema:
+          type: string
+        description: Tag of the item
+        examples:
+          Etsy.com:
+            value: ETSY
+          Shopify:
+            value: SHOPIFY
+      - in: query
+        name: updatedAt_after
+        schema:
+          type: string
+          format: date-time
+        description: Updated At range
+        examples:
+          After:
+            value: '2022-01-01T00:00:00'
+            summary: after
+      - in: query
+        name: updatedAt_before
+        schema:
+          type: string
+          format: date-time
+        description: Updated At range
+        examples:
+          Before:
+            value: '2024-12-31T23:59:59'
+            summary: before
+      tags:
+      - items
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+          description: ''
+  /items/item/:
+    get:
+      operationId: items_item_retrieve
+      description: Get a single item
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+        description: Item Id
+        examples:
+          Id:
+            value: '2'
+      tags:
+      - items
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+          description: ''
+  /items/update/:
+    put:
+      operationId: items_update_update
+      description: Update an item
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: string
+        description: Item Id
+        examples:
+          Id:
+            value: '2'
+      tags:
+      - items
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Item'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Item'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+          description: ''
+  /user/forgotPassword/:
+    post:
+      operationId: user_forgotPassword_create
+      description: Forgot Password
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPassword'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ForgotPassword'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ForgotPassword'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses: {}
+  /user/login/:
+    post:
+      operationId: user_login_create
+      description: User Login
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses: {}
+  /user/logout/:
+    get:
+      operationId: user_logout_retrieve
+      description: User Logout
+      tags:
+      - user
+      security:
+      - cookieAuth: []
+      responses: {}
+  /user/register/:
+    post:
+      operationId: user_register_create
+      description: User Registration
+      tags:
+      - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+components:
+  schemas:
+    ForgotPassword:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required:
+      - email
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+        sku:
+          type: string
+          maxLength: 12
+        tag:
+          type: string
+          maxLength: 10
+        category:
+          type: string
+          maxLength: 30
+        in_stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        stock_status:
+          type: boolean
+        available_stock:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+      required:
+      - createdAt
+      - id
+      - name
+      - updatedAt
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          maxLength: 128
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+      required:
+      - id
+      - password
+      - username
+    UserLogin:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        password:
+          type: string
+          maxLength: 128
+      required:
+      - password
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

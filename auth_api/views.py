@@ -11,16 +11,19 @@ from django.utils.decorators import method_decorator
 
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
-
-from base.models import Item
-from items_api.serializers import ItemSerializer
-
-from .serializer import UserSerializer
+from drf_spectacular.utils import extend_schema
+from .serializer import ForgotPasswordSerializer, UserLoginSerializer, UserSerializer
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.openapi import OpenApiParameter, OpenApiExample, OpenApiTypes
 
 # Add password validatiion check regex's
 # Add email check
 
+@extend_schema(
+    request=UserSerializer,
+    responses=UserSerializer,
+    description="User Registration"
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
@@ -33,6 +36,11 @@ def register(request):
         return Response({'user':serializer.data}, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@extend_schema(
+    request=UserLoginSerializer,
+    responses={},
+    description="User Login"
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
@@ -43,10 +51,15 @@ def login(request):
     if user is not None:
         auth.login(request=request, user=user)
         serializer = UserSerializer(user)
-        return Response({'user': serializer.data}, status=status.HTTP_200_OK)
+        return Response("Success", status=status.HTTP_200_OK)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
+@extend_schema(
+    request=ForgotPasswordSerializer,
+    responses={},
+    description="Forgot Password"
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def forgotpassword(request):
@@ -54,6 +67,11 @@ def forgotpassword(request):
     serializer = UserSerializer(user)
     return Response("Password reset email sent.", status=status.HTTP_200_OK)
 
+@extend_schema(
+    request={},
+    responses={},
+    description="User Logout"
+)
 @api_view(['GET'])
 def logout(request):
     auth.logout(request=request)

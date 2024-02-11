@@ -11,12 +11,25 @@ from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from django_filters.utils import translate_validation
 from django.shortcuts import get_object_or_404
-
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.openapi import OpenApiParameter, OpenApiExample, OpenApiTypes
 from django.core.cache import cache
 import time
 import redis
 from rest_framework.response import Response
 
+sortByExamples = [
+    OpenApiExample("Category", value="category"),
+    OpenApiExample("SKU", value="sku"),
+    OpenApiExample("Descending Name", value="-name"),
+    OpenApiExample("Ascending Name", value="name")
+]
+
+@extend_schema(
+    request=ItemSerializer,
+    responses=ItemSerializer,
+    description="Get items with pagination"
+)
 @api_view(['GET'])
 def getItems(request):
     paginator = PageNumberPagination()
@@ -29,6 +42,11 @@ def getItems(request):
     paginated = paginator.get_paginated_response(serializer.data)
     return paginated
 
+@extend_schema(
+    request=ItemSerializer,
+    responses=ItemSerializer,
+    description="Add a single item"
+)
 @api_view(['POST'])
 def addItem(request):
     serializer = ItemSerializer(data=request.data)
@@ -36,12 +54,24 @@ def addItem(request):
         serializer.save()
     return Response(serializer.data)
 
+@extend_schema(
+    parameters=[OpenApiParameter(name="id", description="Item Id", examples=[OpenApiExample("Id", "2")])],
+    request=ItemSerializer,
+    responses=ItemSerializer,
+    description="Delete an item"
+)
 @api_view(['DELETE'])
-def deleteItem(request):   
-    item = get_object_or_404(Item, id=request.data['id'])
+def deleteItem(request):
+    item = get_object_or_404(Item, id=request.GET['id'])
     item.delete()
     return Response("Item deleted", status=status.HTTP_200_OK)
 
+@extend_schema(
+    parameters=[OpenApiParameter(name="id", description="Item Id", examples=[OpenApiExample("Id", "2")])],
+    request=ItemSerializer,
+    responses=ItemSerializer,
+    description="Get a single item"
+)
 @api_view(['GET'])
 def getItem(request):
     id = request.GET['id']
@@ -53,14 +83,45 @@ def getItem(request):
     cache.set(cache_key, serializer.data, timeout=(60*5))
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@extend_schema(
+    parameters=[OpenApiParameter(name="id", description="Item Id", examples=[OpenApiExample("Id", "2")])],
+    request=ItemSerializer,
+    responses=ItemSerializer,
+    description="Update an item"
+)
 @api_view(['PUT'])
 def updateItem(request):
-    item = get_object_or_404(Item, id=request.data['id'])
+    item = get_object_or_404(Item, id=request.GET['id'])
     serializer = ItemSerializer(item, data=request.data)
     if serializer.is_valid():
         serializer.save()
     return Response(serializer.data)
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter(name="category", description="Category of the item", examples=[OpenApiExample("Raw Material", value="Raw"), OpenApiExample("Finished Material", value="Finished")]),
+        OpenApiParameter(name="tag", description="Tag of the item", examples=[OpenApiExample("Etsy.com", value="ETSY"), OpenApiExample("Shopify", value="SHOPIFY")]),
+        OpenApiParameter(name="stock_status", description="Stock Status", examples=[OpenApiExample("True", value="True")]),
+        OpenApiParameter(name="in_stock", description="In Stock count", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="in_stock__gte", description="In Stock count >=", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="in_stock__lte", description="In Stock count <=", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="in_stock__lt", description="In Stock count <", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="in_stock__gt", description="In Stock count >", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="available_stock__gte", description="Available Stock count >=", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="available_stock__lte", description="Available Stock count <=", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="available_stock__lt", description="Available Stock count <", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="available_stock__gt", description="Available Stock count >", examples=[OpenApiExample("Count", value="10")]),
+        OpenApiParameter(name="createdAt_before", description="Created At range", type=OpenApiTypes.DATETIME, examples=[OpenApiExample("before", value="2024-12-31T23:59:59")]),
+        OpenApiParameter(name="createdAt_after", description="Created At range", type=OpenApiTypes.DATETIME, examples=[OpenApiExample("after", value="2022-01-01T00:00:00")]),
+        OpenApiParameter(name="updatedAt_before", description="Updated At range", type=OpenApiTypes.DATETIME, examples=[OpenApiExample("before", value="2024-12-31T23:59:59")]),
+        OpenApiParameter(name="updatedAt_after", description="Updated At range", type=OpenApiTypes.DATETIME, examples=[OpenApiExample("after", value="2022-01-01T00:00:00")]),
+        OpenApiParameter(name="search", description="Item Search", examples=[OpenApiExample("Item", value="HairProduct")]),
+        OpenApiParameter(name="order", description="Sort by", examples=sortByExamples),
+    ],
+    request=ItemSerializer,
+    responses=ItemSerializer,
+    description="Filter, Search and Sort"
+)
 @api_view(['GET'])
 def filterItems(request):
     items_qs = Item.objects.all()
