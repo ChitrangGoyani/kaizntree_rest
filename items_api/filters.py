@@ -15,7 +15,7 @@ class ItemFilter(FilterSet):
     createdAt = filters.DateTimeFromToRangeFilter(field_name='createdAt') # generates: createdAt_before & createdAt_after
     updatedAt = filters.DateTimeFromToRangeFilter(field_name='updatedAt')
     search = filters.CharFilter(method='perform_search', label='Search')
-    ordering = filters.OrderingFilter(fields=['name','sku','category','in_stock','available_stock','tag'],label='Ordering')
+    ordering = filters.OrderingFilter(fields=['name','sku','category','in_stock','available_stock','tag'],label='Ordering') # sorting
 
     def perform_search(self, queryset, name, value):
         return queryset.filter(

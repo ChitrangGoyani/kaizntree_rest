@@ -53,8 +53,12 @@ def getItem(request):
 def filterItems(request):
     items_qs = Item.objects.all()
     filterset = ItemFilter(request.GET, queryset=items_qs)
+    cache_key = f'filters:{filterset.data}'
+    if cache_key in cache:
+        return Response(cache.get(cache_key))
     if filterset.is_valid():
         items_qs = filterset.qs
     serializer = ItemSerializer(items_qs, many=True)
+    cache.set(cache_key, serializer.data, timeout=(60*5))
     return Response(serializer.data)
 
