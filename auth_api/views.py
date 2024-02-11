@@ -53,3 +53,8 @@ def forgotpassword(request):
     user = get_object_or_404(User, email=request.data['email'])
     serializer = UserSerializer(user)
     return Response("Password reset email sent.", status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def logout(request):
+    auth.logout(request=request)
+    return Response("User logged out.", status=status.HTTP_200_OK)
