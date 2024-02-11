@@ -20,7 +20,7 @@ from rest_framework.response import Response
 @api_view(['GET'])
 def getItems(request):
     paginator = PageNumberPagination()
-    paginator.page_size = request.GET['pagesize']
+    paginator.page_size = 5
     filterset = ItemFilter(request.GET, queryset=Item.objects.all())
     if not filterset.is_valid():
         raise translate_validation(filterset.errors)
@@ -53,6 +53,14 @@ def getItem(request):
     cache.set(cache_key, serializer.data, timeout=(60*5))
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['PUT'])
+def updateItem(request):
+    item = get_object_or_404(Item, id=request.data['id'])
+    serializer = ItemSerializer(item, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
 @api_view(['GET'])
 def filterItems(request):
     items_qs = Item.objects.all()
@@ -67,4 +75,3 @@ def filterItems(request):
     serializer = ItemSerializer(items_qs, many=True)
     cache.set(cache_key, serializer.data, timeout=(60*5))
     return Response(serializer.data, status=status.HTTP_200_OK)
-

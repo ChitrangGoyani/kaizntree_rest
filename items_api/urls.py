@@ -6,5 +6,6 @@ urlpatterns = [
     path('add/', views.addItem),
     path('item/', views.getItem),
     path('delete/', views.deleteItem),
+    path('update/', views.updateItem),
     path('filter/', views.filterItems)
 ]
