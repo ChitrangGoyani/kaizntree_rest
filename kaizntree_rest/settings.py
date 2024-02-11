@@ -148,3 +148,15 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ]
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://"+os.environ.get("REDIS_HOST")+":"+os.environ.get("REDIS_PORT"), # Local Link provided by the redis-server command
+        "OPTIONS": {
+            "DB": os.environ.get("REDIS_DB"),
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "PASSWORD": os.environ.get("REDIS_PASS")
+        }
+    }
+}

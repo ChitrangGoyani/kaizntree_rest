@@ -3,25 +3,32 @@ from rest_framework.decorators import api_view
 from base.models import Item
 from items_api.filters import ItemFilter
 from .serializers import ItemSerializer
-from rest_framework import status, filters
+from rest_framework import status
+from django.views.decorators.cache import cache_page
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from django_filters.utils import translate_validation
-
+from rest_framework.filters import SearchFilter
 from django.shortcuts import get_object_or_404
+
+from django.core.cache import cache
+import time
+import redis
+from rest_framework.response import Response
 
 @api_view(['GET'])
 def getItems(request):
     paginator = PageNumberPagination()
-    paginator.page_size = 2
+    paginator.page_size = request.GET['pagesize']
     filterset = ItemFilter(request.GET, queryset=Item.objects.all())
     if not filterset.is_valid():
         raise translate_validation(filterset.errors)
     queryset = paginator.paginate_queryset(filterset.qs, request)
     serializer = ItemSerializer(queryset, many=True)
-    return paginator.get_paginated_response(serializer.data)
+    paginated = paginator.get_paginated_response(serializer.data)
+    return paginated
 
 @api_view(['POST'])
 def addItem(request):
@@ -50,5 +57,4 @@ def filterItems(request):
         items_qs = filterset.qs
     serializer = ItemSerializer(items_qs, many=True)
     return Response(serializer.data)
-
 
