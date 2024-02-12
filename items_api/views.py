@@ -23,6 +23,9 @@ sortByExamples = [
     OpenApiExample("Ascending Name", value="name")
 ]
 
+def length_checks(category, tag, sku):
+    return len(str(category)) <= 30 and len(str(tag)) <= 10 and len(str(sku)) <= 12
+
 @extend_schema(
     request=ItemSerializer,
     responses=ItemSerializer,
@@ -38,7 +41,7 @@ def getItems(request):
     queryset = paginator.paginate_queryset(filterset.qs, request)
     serializer = ItemSerializer(queryset, many=True)
     paginated = paginator.get_paginated_response(serializer.data)
-    return Response(paginated, status=status.HTTP_200_OK)
+    return paginated
 
 @extend_schema(
     request=ItemSerializer,
@@ -47,11 +50,18 @@ def getItems(request):
 )
 @api_view(['POST'])
 def addItem(request):
-    serializer = ItemSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response("Failed to update item, please check request body format.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    if request.data:
+        if request.data['available_stock'] < request.data['in_stock']:
+            return Response("Available Stock should be > In Stock", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        elif not length_checks(request.data['category'], request.data['tag'], request.data['sku']):
+            return Response("Incorrect length for category, tag or sku", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            serializer = ItemSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response("Failed to add item, please check request body format.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response("Empty or malformed request body", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
     parameters=[OpenApiParameter(name="id", description="Item Id", examples=[OpenApiExample("Id", "2")])],
@@ -92,12 +102,19 @@ def getItem(request):
 )
 @api_view(['PUT'])
 def updateItem(request):
-    item = get_object_or_404(Item, id=request.GET['id'])
-    serializer = ItemSerializer(item, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response("Failed to update item, please check request body format.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    if request.data and request.GET:
+        if request.data['available_stock'] < request.data['in_stock']:
+            return Response("Available Stock should be > In Stock", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        elif not length_checks(request.data['category'], request.data['tag'], request.data['sku']):
+            return Response("Incorrect length for category, tag or sku", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        else:
+            item = get_object_or_404(Item, id=request.GET['id'])
+            serializer = ItemSerializer(item, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response("Failed to update item, please check request body format.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response("Empty or malformed request body and/or item id not specified.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
     parameters=[
