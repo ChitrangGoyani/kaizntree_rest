@@ -31,6 +31,9 @@ jobs:
         echo 'REDIS_PASS'=${{ secrets.REDIS_PASS }}' >> .env
     - name: Docker image build
       run: docker build -t kaizntree_rest .
+    - name: Print contents of .env file in Docker container
+      run: |
+        docker run --rm kaizntree_rest cat /kaizntree_rest/.env
     - name: Tag the docker image
       run: docker tag kaizntree_rest cgoyani/kaizntree_rest
     - name: Dockerhub push
