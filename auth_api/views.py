@@ -14,10 +14,6 @@ from django.contrib.auth.models import User
 from drf_spectacular.utils import extend_schema
 from .serializer import ForgotPasswordSerializer, UserLoginSerializer, UserSerializer
 from drf_spectacular.utils import extend_schema
-from drf_spectacular.openapi import OpenApiParameter, OpenApiExample, OpenApiTypes
-
-# Add password validatiion check regex's
-# Add email check
 
 @extend_schema(
     request=UserSerializer,
@@ -30,11 +26,11 @@ def register(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-        user = User.objects.get(username=request.data['username'])
+        user = get_object_or_404(User, username=request.data['username'])
         user.set_password(request.data['password'])
         user.save()
-        return Response({'user':serializer.data}, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'user':serializer.data}, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
     request=UserLoginSerializer,
@@ -46,14 +42,12 @@ def register(request):
 def login(request):
     user = get_object_or_404(User, username=request.data['username'])
     user = auth.authenticate(username=request.data['username'], password=request.data['password'])
-    # if not user.check_password(request.data['password']):
-    #     return Response('User is not registered', status=status.HTTP_404_NOT_FOUND)
     if user is not None:
         auth.login(request=request, user=user)
         serializer = UserSerializer(user)
         return Response("Success", status=status.HTTP_200_OK)
     else:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response("Incorrect password or user not registered", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
     request=ForgotPasswordSerializer,

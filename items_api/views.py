@@ -14,8 +14,6 @@ from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from drf_spectacular.openapi import OpenApiParameter, OpenApiExample, OpenApiTypes
 from django.core.cache import cache
-import time
-import redis
 from rest_framework.response import Response
 
 sortByExamples = [
@@ -40,7 +38,7 @@ def getItems(request):
     queryset = paginator.paginate_queryset(filterset.qs, request)
     serializer = ItemSerializer(queryset, many=True)
     paginated = paginator.get_paginated_response(serializer.data)
-    return paginated
+    return Response(paginated, status=status.HTTP_200_OK)
 
 @extend_schema(
     request=ItemSerializer,
@@ -52,7 +50,8 @@ def addItem(request):
     serializer = ItemSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
-    return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response("Failed to update item, please check request body format.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
     parameters=[OpenApiParameter(name="id", description="Item Id", examples=[OpenApiExample("Id", "2")])],
@@ -64,7 +63,7 @@ def addItem(request):
 def deleteItem(request):
     item = get_object_or_404(Item, id=request.GET['id'])
     item.delete()
-    return Response("Item deleted", status=status.HTTP_200_OK)
+    return Response("Item deleted.", status=status.HTTP_200_OK)
 
 @extend_schema(
     parameters=[OpenApiParameter(name="id", description="Item Id", examples=[OpenApiExample("Id", "2")])],
@@ -74,14 +73,16 @@ def deleteItem(request):
 )
 @api_view(['GET'])
 def getItem(request):
-    id = request.GET['id']
-    cache_key = f'item:{id}'
-    if cache_key in cache:
-        return Response(cache.get(cache_key), status=status.HTTP_200_OK)
-    item = get_object_or_404(Item, id=id)
-    serializer = ItemSerializer(item)
-    cache.set(cache_key, serializer.data, timeout=(60*5))
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    if request.GET:
+        id = request.GET['id']
+        cache_key = f'item:{id}'
+        if cache_key in cache:
+            return Response(cache.get(cache_key), status=status.HTTP_200_OK)
+        item = get_object_or_404(Item, id=id)
+        serializer = ItemSerializer(item)
+        cache.set(cache_key, serializer.data, timeout=(60*5))
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response("Missing item id in query.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
     parameters=[OpenApiParameter(name="id", description="Item Id", examples=[OpenApiExample("Id", "2")])],
@@ -95,7 +96,8 @@ def updateItem(request):
     serializer = ItemSerializer(item, data=request.data)
     if serializer.is_valid():
         serializer.save()
-    return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response("Failed to update item, please check request body format.", status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @extend_schema(
     parameters=[
