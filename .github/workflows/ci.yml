@@ -19,7 +19,7 @@ jobs:
       run: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
     - name: Create env file
       run: |
-        touch .env
+        touch kaizntree_rest/.env
         echo 'PGDB_NAME=${{ secrets.PGDB_NAME }}' >> .env
         echo 'PGDB_USER'=${{ secrets.PGDB_USER }}' >> .env
         echo 'PGDB_PASS'=${{ secrets.PGDB_PASS }}' >> .env
