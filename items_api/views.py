@@ -23,7 +23,6 @@ sortByExamples = [
     OpenApiExample("Ascending Name", value="name")
 ]
 
-
 def length_checks(category, tag, sku):
     return len(str(category)) <= 30 and len(str(tag)) <= 10 and len(str(sku)) <= 12
 
