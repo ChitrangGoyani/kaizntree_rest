@@ -16,6 +16,6 @@ jobs:
     - name: Pull Docker Image
       run: sudo docker pull cgoyani/kaizntree_rest:latest
     - name: Delete old container
-      run: sudo docker rm -rf kaizntree_rest-container || true
+      run: sudo docker rm kaizntree_rest-container || true
     - name: Run new container
       run: sudo docker run -d -p 8080:8080 --name kaizntree_rest-container cgoyani/kaizntree_rest
