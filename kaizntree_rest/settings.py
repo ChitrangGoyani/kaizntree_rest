@@ -88,13 +88,21 @@ WSGI_APPLICATION = 'kaizntree_rest.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': os.environ.get("PGDB_NAME"),
+    #     'USER': os.environ.get("PGDB_USER"),
+    #     'PASSWORD': os.environ.get("PGDB_PASS"),
+    #     'HOST': os.environ.get("PGDB_HOST"),
+    #     'PORT': os.environ.get("PGDB_PORT"),
+    # },
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("PGDB_NAME"),
-        'USER': os.environ.get("PGDB_USER"),
-        'PASSWORD': os.environ.get("PGDB_PASS"),
-        'HOST': os.environ.get("PGDB_HOST"),
-        'PORT': os.environ.get("PGDB_PORT"),
+        'NAME': 'kaizntree',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'localhost',
+        'PORT': '5432',
     },
 }
 
