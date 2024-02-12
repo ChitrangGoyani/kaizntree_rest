@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Dockerhub login
+      env:
+        DOCKERHUB_USER: ${{secrets.DOCKERHUB_USERNAME}}
+        DOCKERHUB_PASS: ${{secrets.DOCKERHUB_PASSWORD}}
+      run: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
+    - name: setup env file
+      run: |
+        echo "${{ secrets.ENV_FILE }}" > .env
+    - name: Docker image build
+      run: docker build -t kaizntree_rest .
+    - name: Dockerhub push
+      run: docker push ChitrangGoyani/kaizntree_rest:latest
