@@ -26,5 +26,7 @@ jobs:
         echo "${{ secrets.ENV_FILE }}" > .env
     - name: Docker image build
       run: docker build -t kaizntree_rest .
+    - name: Tag the docker image
+      run: docker tag kaizntree_rest cgoyani/kaizntree_rest
     - name: Dockerhub push
       run: docker push cgoyani/kaizntree_rest:latest
