@@ -17,9 +17,18 @@ jobs:
         DOCKERHUB_USER: ${{secrets.DOCKERHUB_USERNAME}}
         DOCKERHUB_PASS: ${{secrets.DOCKERHUB_PASSWORD}}
       run: docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
-    - name: setup env file
+    - name: Create env file
       run: |
-        echo "${{ secrets.ENV_FILE }}" > .env
+        touch .env
+        echo 'PGDB_NAME=${{ secrets.PGDB_NAME }}' >> .env
+        echo 'PGDB_USER'=${{ secrets.PGDB_USER }}' >> .env
+        echo 'PGDB_PASS'=${{ secrets.PGDB_PASS }}' >> .env
+        echo 'PGDB_HOST'=${{ secrets.PGDB_HOST }}' >> .env
+        echo 'PGDB_PORT'=${{ secrets.PGDB_PORT }}' >> .env
+        echo 'REDIS_DB'=${{ secrets.REDIS_DB }}' >> .env
+        echo 'REDIS_HOST'=${{ secrets.REDIS_HOST }}' >> .env
+        echo 'REDIS_PORT'=${{ secrets.REDIS_PORT }}' >> .env
+        echo 'REDIS_PASS'=${{ secrets.REDIS_PASS }}' >> .env
     - name: Docker image build
       run: docker build -t kaizntree_rest .
     - name: Tag the docker image
