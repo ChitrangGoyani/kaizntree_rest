@@ -3,3 +3,4 @@ Please follow the steps below to start accessing the api:
 * head to /api/schema/swagger-ui/
 * register the user
 * login
+* add or play with existing dummy items in the database
