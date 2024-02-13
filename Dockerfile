@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED 1
 
 # Get the Real World example app
 RUN git clone https://github.com/ChitrangGoyani/kaizntree_rest.git /drf_src
-COPY .env /drf_src/.env
+COPY .env /drf/.env
 # Set the working directory to /drf
 # NOTE: all the directives that follow in the Dockerfile will be executed in
 # that directory.

@@ -170,7 +170,7 @@ SPECTACULAR_SETTINGS = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f'redis://+{os.environ.get("REDIS_HOST")}:{os.environ.get("REDIS_PORT")}', # Local Link provided by the redis-server command
+        "LOCATION": f'redis://{os.environ.get("REDIS_HOST")}:{os.environ.get("REDIS_PORT")}', # Local Link provided by the redis-server command
         "OPTIONS": {
             "DB": os.environ.get("REDIS_DB"),
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
